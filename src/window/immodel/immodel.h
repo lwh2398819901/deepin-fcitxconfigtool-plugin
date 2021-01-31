@@ -1,22 +1,13 @@
 #ifndef IMMODEL_H
 #define IMMODEL_H
-#include <QStandardItemModel>
-#include <DStyledItemDelegate>
-#include <DStandardItem>
-#include <QDebug>
+
 #include <QMimeData>
-#include <DStyledItemDelegate>
+#include <QStandardItemModel>
+#include <DStandardItem>
 #include <DStyle>
-// Fcitx
 #include <fcitxqtinputmethoditem.h>
 
-DTK_USE_NAMESPACE
-using Dtk::Widget::DStandardItem;
-using Dtk::Widget::DViewItemAction;
-using Dtk::Widget::DStyle;
-using Dtk::Widget::DViewItemActionList;
-
-
+using namespace Dtk::Widget;
 class IMModel : public QStandardItemModel
 {
     Q_OBJECT

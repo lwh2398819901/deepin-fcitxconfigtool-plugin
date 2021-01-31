@@ -23,45 +23,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGSITEM_H
-#define SETTINGSITEM_H
+#ifndef DCC_TRANSLUCENTFRAME_H
+#define DCC_TRANSLUCENTFRAME_H
 
-#include <DFrame>
-#include <QLabel>
-#include <QApplication>
-#include <DStyle>
 #include <QFrame>
-#include <QVBoxLayout>
+
 namespace dcc {
 namespace widgets {
 
-class SettingsItem : public QFrame
+class TranslucentFrame : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(bool isErr READ isErr DESIGNABLE true SCRIPTABLE true)
-
 public:
-    explicit SettingsItem(QWidget *parent = nullptr);
-
-    bool isErr() const;
-    virtual void setIsErr(const bool err = true);
-
-    void addBackground();
-
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
-
-protected:
-    bool m_isErr;
-
-    DTK_WIDGET_NAMESPACE::DFrame *m_bgGroup{nullptr};
-
-
-
+    explicit TranslucentFrame(QWidget *parent = 0);
 };
 
 }
-}
+} // namespace dcc
 
-#endif // SETTINGSITEM_H
+#endif // DCC_TRANSLUCENTFRAME_H

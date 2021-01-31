@@ -31,6 +31,9 @@
 #include <QStyle>
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QLabel>
+#include <QApplication>
+#include <DStyle>
 
 DWIDGET_USE_NAMESPACE
 DGUI_USE_NAMESPACE
@@ -42,6 +45,7 @@ SettingsItem::SettingsItem(QWidget *parent)
     : QFrame(parent)
     , m_isErr(false)
 {
+
 }
 
 bool SettingsItem::isErr() const
@@ -57,6 +61,7 @@ void SettingsItem::setIsErr(const bool err)
     style()->unpolish(this);
     style()->polish(this);
 }
+
 
 void SettingsItem::addBackground()
 {
@@ -82,6 +87,7 @@ void SettingsItem::resizeEvent(QResizeEvent *event)
     if (m_bgGroup)
         m_bgGroup->setFixedSize(size());
 }
+
 }
 }
 

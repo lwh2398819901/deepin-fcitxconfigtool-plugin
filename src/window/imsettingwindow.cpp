@@ -1,25 +1,12 @@
 #include "imsettingwindow.h"
 #include "widgets/utils.h"
-
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QPushButton>
-#include <QToolButton>
 #include <QComboBox>
-#include <QCheckBox>
-#include <DListView>
-#include "fcitxInterface/global.h"
-#include "fcitxInterface/config.h"
+#include <QGroupBox>
 #include <QScrollArea>
-#include <QSize>
-#include <QTreeView>
+#include <fcitxInterface/global.h>
 #include <libintl.h>
 
-
-DTK_USE_NAMESPACE
 using namespace Fcitx;
-using namespace dcc;
 
 #define for_int(count) for(int i =0;i<count;++i)
 
@@ -38,16 +25,14 @@ IMSettingWindow::~IMSettingWindow()
 
 void IMSettingWindow::updateUI()
 {
+    readConfig();
     if (Global::instance()->inputMethodProxy()) {
-        auto m_list = Global::instance()->inputMethodProxy()->iMList();
-        emit sig_updateIMList(m_list);
-        readConfig();
+        emit sig_updateIMList(Global::instance()->inputMethodProxy()->iMList());
     }
 }
 
 void IMSettingWindow::initUI()
 {
-
     auto createTitle=[this](QString str){
         TitleLabel*title = new TitleLabel(str,this);
         DFontSizeManager::instance()->bind(title, DFontSizeManager::T5, QFont::DemiBold); // 设置label字体
@@ -55,12 +40,27 @@ void IMSettingWindow::initUI()
     };
 
     auto createGroup=[this](QWidget*widget){
-        QGroupBox *groupBox =new QGroupBox();
-        QVBoxLayout *layout =new QVBoxLayout();
+        QGroupBox *groupBox =new QGroupBox(this);
+        QVBoxLayout *layout =new QVBoxLayout(this);
         layout->setContentsMargins(0,0,0,0);
         layout->addWidget(widget);
         groupBox->setLayout(layout);
         return groupBox;
+    };
+
+    auto createKeyEditWidget=[=](DKeySequenceEdit* &keyEdit,QString str){
+        QWidget *widget = new QWidget(this);
+        QHBoxLayout *layout = new QHBoxLayout(widget);
+        keyEdit = new DKeySequenceEdit(this);
+        QLabel *label = new QLabel(str,this);
+        layout->addWidget(label);
+        layout->addStretch();
+        layout->addWidget(keyEdit);
+        widget->setLayout(layout);
+        keyEdit->setKeySequence(QKeySequence::FindNext);
+        keyEdit->setFixedSize(200,30);
+        keyEdit->setFrame(false);
+        return createGroup(widget);
     };
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -68,25 +68,32 @@ void IMSettingWindow::initUI()
 
     m_defualtIMCbox = new ComboxWidget("默认");
     mainLayout->addWidget(createGroup(m_defualtIMCbox));
-
     m_switchSystem =new SwitchWidget("使用系统托盘",this);
     mainLayout->addWidget(createGroup(m_switchSystem));
     mainLayout->addSpacing(20);
 
-    QVBoxLayout *mainLayout2 =  new QVBoxLayout(this);
-    mainLayout2->setContentsMargins(0,0,0,0);
+
     QHBoxLayout *headLayout = new QHBoxLayout(this);
     headLayout->setContentsMargins(0,0,0,0);
     headLayout->addWidget(createTitle(tr("输入法管理")));
     m_editBtn = new DCommandLinkButton(tr("编辑"));
     headLayout->addStretch();
     headLayout->addWidget(m_editBtn);
-    mainLayout2->addLayout(headLayout);
+    mainLayout->addLayout(headLayout);
     m_IMCurrentView = new DListView(this);
-    mainLayout2->addWidget(m_IMCurrentView);
-    mainLayout->addLayout(mainLayout2);
-    mainLayout->addWidget(createTitle(tr("快捷键")));
+    m_IMCurrentView->setDragEnabled(true);
+    m_IMCurrentView->setAcceptDrops(true);
+    m_IMCurrentView->setDropIndicatorShown(true);
+    m_IMCurrentView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_IMCurrentView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_IMCurrentView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_IMCurrentView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_IMCurrentView->setItemSpacing(2);
+    m_IMCurrentView->setItemSize(QSize(100,48));
+    mainLayout->addWidget(m_IMCurrentView);
+    mainLayout->addSpacing(20);
 
+    mainLayout->addWidget(createTitle(tr("快捷键")));
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameShape(QFrame::NoFrame);
@@ -101,6 +108,12 @@ void IMSettingWindow::initUI()
     scrollArea->setWidget(scrollAreaWidgetContents);
     mainLayout->addWidget(scrollArea);
 
+    m_imSwitchCbox =new ComboxWidget(tr("切换输入法"));
+    m_imSwitchCbox->comboBox()->addItems({"Ctrl+Shift","Alt+Shift","Ctrl+Super","Alt+Super"});
+    vLayout->addWidget(createGroup(m_imSwitchCbox));
+    vLayout->addWidget(createKeyEditWidget(m_defualtIMKey,tr("切换至默认输入法")));
+    vLayout->addWidget(createKeyEditWidget(m_virtualKey,tr("切换虚拟键盘")));
+
     m_systemAppCbox = new ComboxWidget(tr("切换方式"));
     m_systemAppCbox->comboBox()->addItems({"系统","应用"});
     mainLayout->addWidget(m_systemAppCbox);
@@ -112,22 +125,11 @@ void IMSettingWindow::initUI()
     headLayout2->addWidget(m_addIMBtn);
     headLayout2->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
     mainLayout->addLayout(headLayout2);
-
     this->setLayout(mainLayout);
 
     m_curIMModel = new IMModel(this);
     m_IMCurrentView->setModel(m_curIMModel);
     m_defualtIMCbox->comboBox()->setModel(m_curIMModel);
-
-    m_IMCurrentView->setDragEnabled(true);
-    m_IMCurrentView->setAcceptDrops(true);
-    m_IMCurrentView->setDropIndicatorShown(true);
-    m_IMCurrentView->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_IMCurrentView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_IMCurrentView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_IMCurrentView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_IMCurrentView->setItemSpacing(2);
-    m_IMCurrentView->setItemSize(QSize(100,48));
 }
 
 void IMSettingWindow::initConnect()
@@ -138,6 +140,11 @@ void IMSettingWindow::initConnect()
     connect(m_editBtn,&DCommandLinkButton::clicked,this,&IMSettingWindow::slot_editBtnClicked);
     connect(m_systemAppCbox,&ComboxWidget::onSelectChanged,this,&IMSettingWindow::slot_defualtIMChanged);
     connect(this,&IMSettingWindow::sig_updateIMList,m_curIMModel,&IMModel::slot_filterIMEntryList);
+    connect(Global::instance(),&Global::connectStatusChanged,[=](){
+        if (Global::instance()->inputMethodProxy()) {
+            emit sig_updateIMList(Global::instance()->inputMethodProxy()->iMList());
+        }
+    });
 }
 
 void IMSettingWindow::readConfig()

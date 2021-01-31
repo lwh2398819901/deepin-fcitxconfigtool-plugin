@@ -182,7 +182,7 @@ void IMModel::itemSawp(int index, int index2)
     emit sig_curIMchanged(m_curIMList);
 }
 
-void IMModel::configShow(Widget::DStandardItem *item)
+void IMModel::configShow(DStandardItem *item)
 {
 
 }

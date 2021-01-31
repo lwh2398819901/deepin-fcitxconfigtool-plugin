@@ -5,9 +5,6 @@
 #include <QWidget>
 #include <QStackedWidget>
 #include <QGridLayout>
-#include <fcitxqtinputmethoditem.h>
-#include <fcitx/addon.h>
-
 
 class IMWindow : public QWidget
 {
@@ -16,13 +13,13 @@ public:
     explicit IMWindow(QWidget *parent = nullptr);
     virtual ~IMWindow();
 private:
-    void initUI();
-    void initConnect();
-    void initFcitxInterface();
+    void initUI();                      //初始化界面
+    void initConnect();                 //初始化信号槽
+    void initFcitxInterface();          //初始化fcitx接口
 private:
-    QStackedWidget *m_stackedWidget{};
-    IMSettingWindow *m_settingWindow{};
-    IMAddWindow *m_addWindow{};
+    QStackedWidget *m_stackedWidget{};  //栈窗口
+    IMSettingWindow *m_settingWindow{}; //输入法编辑窗口
+    IMAddWindow *m_addWindow{};         //输入法添加窗口
 };
 
 #endif // IMWIDOW_H

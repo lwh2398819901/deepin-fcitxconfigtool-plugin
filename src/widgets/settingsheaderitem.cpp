@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 ~ 2018 Deepin Technology Co., Ltd.
+ * Copyright (C) 2011 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     sbw <sbw@sbw.so>
  *             kirigaya <kirigaya@mkacg.com>
@@ -23,45 +23,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGSITEM_H
-#define SETTINGSITEM_H
+#include "settingsheaderitem.h"
 
-#include <DFrame>
-#include <QLabel>
-#include <QApplication>
-#include <DStyle>
-#include <QFrame>
-#include <QVBoxLayout>
+#include "labels/normallabel.h"
+
 namespace dcc {
 namespace widgets {
 
-class SettingsItem : public QFrame
+SettingsHeaderItem::SettingsHeaderItem(QWidget *parent)
+    : SettingsItem(parent),
+      m_mainLayout(new QHBoxLayout),
+      m_headerText(new TitleLabel)
 {
-    Q_OBJECT
-    Q_PROPERTY(bool isErr READ isErr DESIGNABLE true SCRIPTABLE true)
+    m_headerText->setObjectName("SettingsHeaderItemTitle");
 
-public:
-    explicit SettingsItem(QWidget *parent = nullptr);
+    m_mainLayout->addSpacing(20);
+    m_mainLayout->addWidget(m_headerText);
+    m_mainLayout->addStretch();
 
-    bool isErr() const;
-    virtual void setIsErr(const bool err = true);
+    setFixedHeight(24);
+    m_mainLayout->setSpacing(0);
+    m_mainLayout->setMargin(0);
 
-    void addBackground();
+    setLayout(m_mainLayout);
+}
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+void SettingsHeaderItem::setTitle(const QString &title)
+{
+    m_headerText->setText(title);
+}
 
+void SettingsHeaderItem::setRightWidget(QWidget *widget)
+{
+    Q_ASSERT(widget);
 
-protected:
-    bool m_isErr;
-
-    DTK_WIDGET_NAMESPACE::DFrame *m_bgGroup{nullptr};
-
-
-
-};
+    m_mainLayout->addWidget(widget, 0, Qt::AlignRight);
+}
 
 }
 }
-
-#endif // SETTINGSITEM_H

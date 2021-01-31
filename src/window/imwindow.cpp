@@ -1,6 +1,5 @@
 #include "imwindow.h"
-#include "fcitxInterface/global.h"
-#include "fcitxInterface/config.h"
+#include <fcitxInterface/config.h>
 #include <libintl.h>
 
 using namespace Fcitx;
@@ -28,40 +27,30 @@ void IMWindow::initFcitxInterface()
 void IMWindow::initUI()
 {
     m_stackedWidget = new QStackedWidget(this);
-    m_settingWindow=new IMSettingWindow(this);
-    m_addWindow=new IMAddWindow(this);
+    m_settingWindow = new IMSettingWindow(this);
+    m_addWindow = new IMAddWindow(this);
     m_stackedWidget->addWidget(m_settingWindow);
     m_stackedWidget->addWidget(m_addWindow);
     m_stackedWidget->setCurrentIndex(0);
 
     QVBoxLayout *pLayout = new QVBoxLayout();
-
     pLayout->addWidget(m_stackedWidget);
-    pLayout->setSpacing(10);
     pLayout->setContentsMargins(0, 10, 0, 10);
     setLayout(pLayout);
-
 }
 
 void IMWindow::initConnect()
 {
     connect(m_settingWindow,&IMSettingWindow::sig_popIMListWindow,[=](){
          m_stackedWidget->setCurrentIndex(1);
-         m_addWindow->updateUI();
     });
 
     connect(m_addWindow,&IMAddWindow::sig_cancel,[=](){
          m_stackedWidget->setCurrentIndex(0);
-         m_settingWindow->updateUI();
-    });
-    connect(m_addWindow,&IMAddWindow::sig_addIM,[=](){
-         m_stackedWidget->setCurrentIndex(0);
-         m_settingWindow->updateUI();
     });
 
-    connect(Global::instance(),&Global::connectStatusChanged,[=](){
-        m_settingWindow->updateUI();
-        m_addWindow->updateUI();
+    connect(m_addWindow,&IMAddWindow::sig_addIM,[=](){
+         m_stackedWidget->setCurrentIndex(0);
     });
 }
 

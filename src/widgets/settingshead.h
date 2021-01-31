@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 ~ 2018 Deepin Technology Co., Ltd.
+ * Copyright (C) 2011 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     sbw <sbw@sbw.so>
  *             kirigaya <kirigaya@mkacg.com>
@@ -23,45 +23,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGSITEM_H
-#define SETTINGSITEM_H
+#ifndef SETTINGSHEAD_H
+#define SETTINGSHEAD_H
 
-#include <DFrame>
-#include <QLabel>
-#include <QApplication>
-#include <DStyle>
-#include <QFrame>
-#include <QVBoxLayout>
+#include "settingsitem.h"
+#include "titlelabel.h"
+#include <QPushButton>
+
+DWIDGET_BEGIN_NAMESPACE
+class DCommandLinkButton;
+DWIDGET_END_NAMESPACE
+
 namespace dcc {
 namespace widgets {
 
-class SettingsItem : public QFrame
+class NormalLabel;
+class SettingsHead : public SettingsItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool isErr READ isErr DESIGNABLE true SCRIPTABLE true)
 
 public:
-    explicit SettingsItem(QWidget *parent = nullptr);
+    enum State {
+        Edit,
+        Cancel
+    };
 
-    bool isErr() const;
-    virtual void setIsErr(const bool err = true);
+public:
+    explicit SettingsHead(QFrame *parent = nullptr);
 
-    void addBackground();
+    void setTitle(const QString &title);
+    void setEditEnable(bool state = true);
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+public Q_SLOTS:
+    void toEdit();
+    void toCancel();
 
+Q_SIGNALS:
+    void editChanged(bool edit);
 
-protected:
-    bool m_isErr;
+private Q_SLOTS:
+    void refershButton();
+    void onClicked();
 
-    DTK_WIDGET_NAMESPACE::DFrame *m_bgGroup{nullptr};
+private:
+    TitleLabel *m_title;
+    DTK_WIDGET_NAMESPACE::DCommandLinkButton *m_edit;
 
-
-
+    State m_state;
 };
 
 }
 }
 
-#endif // SETTINGSITEM_H
+#endif // SETTINGSHEAD_H

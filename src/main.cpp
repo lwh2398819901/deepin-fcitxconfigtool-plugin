@@ -1,12 +1,14 @@
 #include <DApplication>
 #include <DWidgetUtil>
 #include <DApplicationSettings>
+#include <DMainWindow>
 #include "window/imwindow.h"
 #include "widgets/comboxwidget.h"
 #include "widgets/titlelabel.h"
 #include "widgets/searchinput.h"
 #include "widgets/switchwidget.h"
 #include "window/imaddwindow.h"
+#include <QVBoxLayout>
 
 
 DWIDGET_USE_NAMESPACE
@@ -27,8 +29,12 @@ int main(int argc, char *argv[])
     a.loadTranslator();
     a.setApplicationDisplayName(QCoreApplication::translate("Main", "deepin-fcitxconfigtool-plugin"));
 
+
+
     IMWindow w;
-    w.show();
+
+
+      w.show();
     Dtk::Widget::moveToCenter(&w);
 
     return a.exec();

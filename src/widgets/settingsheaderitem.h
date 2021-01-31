@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 ~ 2018 Deepin Technology Co., Ltd.
+ * Copyright (C) 2011 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     sbw <sbw@sbw.so>
  *             kirigaya <kirigaya@mkacg.com>
@@ -23,45 +23,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGSITEM_H
-#define SETTINGSITEM_H
+#ifndef SETTINGSHEADERITEM_H
+#define SETTINGSHEADERITEM_H
 
-#include <DFrame>
+#include "settingsitem.h"
+#include "titlelabel.h"
+
+#include <QHBoxLayout>
 #include <QLabel>
-#include <QApplication>
-#include <DStyle>
-#include <QFrame>
-#include <QVBoxLayout>
+
 namespace dcc {
 namespace widgets {
 
-class SettingsItem : public QFrame
+class SettingsHeaderItem : public SettingsItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool isErr READ isErr DESIGNABLE true SCRIPTABLE true)
 
 public:
-    explicit SettingsItem(QWidget *parent = nullptr);
+    explicit SettingsHeaderItem(QWidget *parent = 0);
 
-    bool isErr() const;
-    virtual void setIsErr(const bool err = true);
+    TitleLabel *textLabel() const { return m_headerText; }
+    QHBoxLayout *layout() const { return m_mainLayout; }
 
-    void addBackground();
+    void setTitle(const QString &title);
+    void setRightWidget(QWidget *widget);
 
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
-
-protected:
-    bool m_isErr;
-
-    DTK_WIDGET_NAMESPACE::DFrame *m_bgGroup{nullptr};
-
-
-
+private:
+    QHBoxLayout *m_mainLayout;
+    TitleLabel *m_headerText;
 };
 
 }
 }
 
-#endif // SETTINGSITEM_H
+#endif // SETTINGSHEADERITEM_H
