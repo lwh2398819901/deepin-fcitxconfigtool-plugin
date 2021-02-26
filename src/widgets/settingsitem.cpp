@@ -38,14 +38,13 @@
 DWIDGET_USE_NAMESPACE
 DGUI_USE_NAMESPACE
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 SettingsItem::SettingsItem(QWidget *parent)
     : QFrame(parent)
     , m_isErr(false)
 {
-
 }
 
 bool SettingsItem::isErr() const
@@ -55,13 +54,13 @@ bool SettingsItem::isErr() const
 
 void SettingsItem::setIsErr(const bool err)
 {
-    if (m_isErr == err) return;
+    if (m_isErr == err)
+        return;
     m_isErr = err;
 
     style()->unpolish(this);
     style()->polish(this);
 }
-
 
 void SettingsItem::addBackground()
 {
@@ -88,6 +87,5 @@ void SettingsItem::resizeEvent(QResizeEvent *event)
         m_bgGroup->setFixedSize(size());
 }
 
-}
-}
-
+} // namespace widgets
+} // namespace dcc

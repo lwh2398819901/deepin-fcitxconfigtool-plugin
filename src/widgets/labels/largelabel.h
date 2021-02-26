@@ -28,7 +28,7 @@
 
 #include <QLabel>
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class LargeLabel : public QLabel
@@ -39,7 +39,7 @@ public:
     using QLabel::QLabel; // using default inheritance constructor
 };
 
-}
-}
+} // namespace widgets
+} // namespace dcc
 
 #endif // LARGELABEL_H

@@ -2,95 +2,99 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>DCC_NAMESPACE::FcitxConfigPlugin</name>
+    <message>
+        <location filename="../src/fcitxconfigplugin.h" line="95"/>
+        <source>Manage Input Methods</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IMAddWindow</name>
     <message>
-        <location filename="../src/window/imaddwindow.cpp" line="27"/>
-        <source>添加输入法</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imaddwindow.cpp" line="36"/>
-        <source>搜索</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imaddwindow.cpp" line="45"/>
-        <source>前往商店下载</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imaddwindow.cpp" line="51"/>
-        <source>添加</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/window/imaddwindow.cpp" line="54"/>
-        <source>取消</source>
+        <source>Add Input Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imaddwindow.cpp" line="63"/>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imaddwindow.cpp" line="74"/>
+        <source>Find more in App Store</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imaddwindow.cpp" line="80"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imaddwindow.cpp" line="82"/>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>IMSettingWindow</name>
     <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="67"/>
-        <source>输入法</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="78"/>
-        <source>输入法管理</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="79"/>
-        <location filename="../src/window/imsettingwindow.cpp" line="177"/>
-        <source>编辑</source>
+        <location filename="../src/window/imsettingwindow.cpp" line="120"/>
+        <source>Input Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/window/imsettingwindow.cpp" line="96"/>
-        <source>快捷键</source>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imsettingwindow.cpp" line="123"/>
+        <source>Manage Input Methods</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imsettingwindow.cpp" line="126"/>
+        <source>Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imsettingwindow.cpp" line="108"/>
+        <source>Switch input methods</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imsettingwindow.cpp" line="109"/>
+        <source>Switch to default input method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/window/imsettingwindow.cpp" line="110"/>
+        <source>Call out Onboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/window/imsettingwindow.cpp" line="111"/>
-        <source>切换输入法</source>
+        <source>Applies to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="114"/>
-        <source>切换至默认输入法</source>
+        <location filename="../src/window/imsettingwindow.cpp" line="112"/>
+        <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="115"/>
-        <source>切换虚拟键盘</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="117"/>
-        <source>切换方式</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/window/imsettingwindow.cpp" line="174"/>
-        <source>完成</source>
+        <location filename="../src/window/imsettingwindow.cpp" line="112"/>
+        <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/main.cpp" line="30"/>
+        <location filename="../src/main.cpp" line="50"/>
         <source>deepin-fcitxconfigtool-plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SearchInput</name>
-    <message>
-        <location filename="../src/widgets/searchinput.cpp" line="42"/>
-        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -98,12 +102,12 @@
     <name>SettingsHead</name>
     <message>
         <location filename="../src/widgets/settingshead.cpp" line="48"/>
-        <location filename="../src/widgets/settingshead.cpp" line="102"/>
+        <location filename="../src/widgets/settingshead.cpp" line="112"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/widgets/settingshead.cpp" line="104"/>
+        <location filename="../src/widgets/settingshead.cpp" line="114"/>
         <source>Done</source>
         <translation type="unfinished"></translation>
     </message>

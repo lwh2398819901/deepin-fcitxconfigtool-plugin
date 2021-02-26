@@ -23,53 +23,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BASICLISTMODEL_H
-#define BASICLISTMODEL_H
+#ifndef CONTENTWIDGET_H
+#define CONTENTWIDGET_H
 
-#include <QAbstractListModel>
+#include <QWidget>
+#include <QLabel>
+#include <QVBoxLayout>
 
-namespace dcc {
+#include <dimagebutton.h>
+
+DWIDGET_USE_NAMESPACE
+
+class QScrollArea;
+class QPropertyAnimation;
+class QPushButton;
+
+namespace dcc_fcitx_configtool {
 
 namespace widgets {
+class BackButton;
+}
+} // namespace dcc_fcitx_configtool
 
-class BasicListModel : public QAbstractListModel
+namespace dcc_fcitx_configtool {
+namespace widgets {
+class ContentWidget : public QWidget
 {
     Q_OBJECT
 
 public:
+    explicit ContentWidget(QWidget *parent = 0);
+    ~ContentWidget();
 
-    enum ItemRole
-    {
-        ItemSizeRole = Qt::SizeHintRole,
-        ItemTextRole = Qt::DisplayRole,
-        ReservedRole = Qt::UserRole,
-        ItemIsFirstRole,
-        ItemIsLastRole,
-        ItemSelectedRole,
-        ItemHoverRole
-    };
+    QWidget *content() const { return m_content; }
+    QWidget *setContent(QWidget *const w);
+    void scrollTo(int dy);
 
-    explicit BasicListModel(QObject *parent = 0);
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-
-public Q_SLOTS:
-    void clear();
-    void appendOption(const QString &text, const QVariant &data = QVariant());
-    void setSelectedIndex(const QModelIndex &index);
-    void setHoveredIndex(const QModelIndex &index);
-
-private:
-    QList<QString> m_options;
-    QList<QVariant> m_values;
-
-    QModelIndex m_selectedIndex;
-    QModelIndex m_hoveredIndex;
+protected:
+    QScrollArea *m_contentArea {nullptr};
+    QWidget *m_content {nullptr};
 };
+} // namespace widgets
+} // namespace dcc_fcitx_configtool
 
-}
-
-}
-
-#endif // BASICLISTMODEL_H
+#endif // CONTENTWIDGET_H

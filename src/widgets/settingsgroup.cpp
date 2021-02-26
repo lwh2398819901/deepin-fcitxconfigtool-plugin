@@ -26,6 +26,7 @@
 #include "settingsgroup.h"
 #include "settingsitem.h"
 #include "settingsheaderitem.h"
+#include "settingshead.h"
 #include "utils.h"
 #include "imsettingsitem.h"
 #include <DBackgroundGroup>
@@ -34,10 +35,9 @@
 #include <QEvent>
 #include <QDebug>
 
-
 DWIDGET_USE_NAMESPACE
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 SettingsGroup::SettingsGroup(QFrame *parent, BackgroundStyle bgStyle)
@@ -102,15 +102,16 @@ void SettingsGroup::insertItem(const int index, SettingsItem *item)
     m_layout->insertWidget(index, item);
     item->installEventFilter(this);
 
-    IMSettingsItem *mItem = dynamic_cast<IMSettingsItem*>(item);
-    if(mItem)
-        connect(mItem,&IMSettingsItem::sig_itemClicked,[=](IMSettingsItem *myItem){
-            int i =itemCount();
-            for(int j =0;j<i;++j){
-                if(this->getItem(j)!=myItem){
-                    IMSettingsItem *Titem = dynamic_cast<IMSettingsItem*>(this->getItem(j));
-                    if(Titem)
-                        Titem->clearItemSelected();
+    IMSettingsItem *mItem = dynamic_cast<IMSettingsItem *>(item);
+    if (mItem)
+        connect(mItem, &IMSettingsItem::itemClicked, [=](IMSettingsItem *myItem) {
+            int i = itemCount();
+            for (int j = 0; j < i; ++j) {
+                if (this->getItem(j) != myItem) {
+                    IMSettingsItem *Titem = dynamic_cast<IMSettingsItem *>(this->getItem(j));
+                    if (Titem) {
+                        Titem->setItemSelected(false);
+                    }
                 }
             }
         });
@@ -130,10 +131,26 @@ void SettingsGroup::appendItem(SettingsItem *item, BackgroundStyle bgStyle)
 
     m_layout->insertWidget(m_layout->count(), item);
     item->installEventFilter(this);
+
+    IMSettingsItem *mItem = dynamic_cast<IMSettingsItem *>(item);
+    if (mItem)
+        connect(mItem, &IMSettingsItem::itemClicked, [=](IMSettingsItem *myItem) {
+            int i = itemCount();
+            for (int j = 0; j < i; ++j) {
+                if (this->getItem(j) != myItem) {
+                    IMSettingsItem *Titem = dynamic_cast<IMSettingsItem *>(this->getItem(j));
+                    if (Titem) {
+                        Titem->setItemSelected(false);
+                    }
+                }
+            }
+        });
 }
 
 void SettingsGroup::removeItem(SettingsItem *item)
 {
+    if (!item)
+        return;
     m_layout->removeWidget(item);
     item->removeEventFilter(this);
 }
@@ -191,5 +208,5 @@ void SettingsGroup::insertWidget(QWidget *widget)
 {
     m_layout->insertWidget(m_layout->count(), widget);
 }
-}
-}
+} // namespace widgets
+} // namespace dcc_fcitx_configtool

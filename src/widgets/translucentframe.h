@@ -28,7 +28,7 @@
 
 #include <QFrame>
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class TranslucentFrame : public QFrame
@@ -38,7 +38,7 @@ public:
     explicit TranslucentFrame(QWidget *parent = 0);
 };
 
-}
+} // namespace widgets
 } // namespace dcc
 
 #endif // DCC_TRANSLUCENTFRAME_H

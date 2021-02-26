@@ -30,19 +30,17 @@
 #include <QLabel>
 
 using namespace DCC_NAMESPACE;
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 ComboxWidget::ComboxWidget(QFrame *parent)
     : ComboxWidget(new QLabel, parent)
 {
-
 }
 
 ComboxWidget::ComboxWidget(const QString &title, QFrame *parent)
     : ComboxWidget(new QLabel(title), parent)
 {
-
 }
 
 ComboxWidget::ComboxWidget(QWidget *widget, QFrame *parent)
@@ -58,9 +56,9 @@ ComboxWidget::ComboxWidget(QWidget *widget, QFrame *parent)
     }
 
     mainLayout->addWidget(m_leftWidget, 0, Qt::AlignVCenter);
-    mainLayout->setStretchFactor(m_leftWidget,3);
+    mainLayout->setStretchFactor(m_leftWidget, 3);
     mainLayout->addWidget(m_switchComboBox, 0, Qt::AlignVCenter);
-    mainLayout->setStretchFactor(m_switchComboBox,7);
+    mainLayout->setStretchFactor(m_switchComboBox, 7);
 
     m_leftWidget->setFixedWidth(ComboxTitleWidth);
     m_leftWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -135,5 +133,5 @@ void ComboxWidget::resizeEvent(QResizeEvent *event)
     SettingsItem::resizeEvent(event);
 }
 
-}
-}
+} // namespace widgets
+} // namespace dcc

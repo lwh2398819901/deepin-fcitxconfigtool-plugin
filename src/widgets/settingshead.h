@@ -34,7 +34,7 @@ DWIDGET_BEGIN_NAMESPACE
 class DCommandLinkButton;
 DWIDGET_END_NAMESPACE
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class NormalLabel;
@@ -57,6 +57,7 @@ public:
 public Q_SLOTS:
     void toEdit();
     void toCancel();
+    void setEdit(bool flag);
 
 Q_SIGNALS:
     void editChanged(bool edit);
@@ -72,7 +73,7 @@ private:
     State m_state;
 };
 
-}
-}
+} // namespace widgets
+} // namespace dcc_fcitx_configtool
 
 #endif // SETTINGSHEAD_H

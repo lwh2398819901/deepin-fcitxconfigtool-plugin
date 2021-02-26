@@ -1,188 +1,203 @@
+/*
+* Copyright (C) 2021 ~ 2021 Deepin Technology Co., Ltd.
+*
+* Author:     liuwenhao <liuwenhao@uniontech.com>
+*
+* Maintainer: liuwenhao <liuwenhao@uniontech.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "immodel.h"
+#include "fcitxInterface/global.h"
+#include "publisher/publisherdef.h"
+#include "imconfig.h"
 #include <QApplication>
+#include <DStyle>
+#include <DStandardItem>
 
-IMModel::IMModel(QObject *parent)
-    : QStandardItemModel (parent)
+using namespace Fcitx;
+using namespace Dtk::Widget;
+
+IMModel *IMModel::m_ins {nullptr};
+
+bool operator==(const FcitxQtInputMethodItem &item, const FcitxQtInputMethodItem &item2)
 {
+    return item.name() == item2.name()
+           && item.langCode() == item2.langCode()
+           && item.uniqueName() == item2.uniqueName() && item.enabled() == item2.enabled();
+}
 
+IMModel::IMModel()
+    : QObject(nullptr)
+{
+    onUpdateIMList();
+    connect(Global::instance(), &Global::connectStatusChanged, this, &IMModel::onUpdateIMList);
 }
 
 IMModel::~IMModel()
 {
-
 }
 
-Qt::DropActions IMModel::supportedDropActions() const
+IMModel *IMModel::instance()
 {
-    return Qt::CopyAction|Qt::MoveAction;
+    return m_ins == nullptr ? (m_ins = new IMModel()) : m_ins;
 }
 
-QStringList IMModel::mimeTypes() const
+void IMModel::deleteIMModel()
 {
-    QStringList types=QStringList()<<"InputMethod";
-    return types;
-}
-
-QMimeData *IMModel::mimeData(const QModelIndexList &index) const
-{
-    QMimeData*mimeData =new QMimeData();
-    QByteArray encodeData;
-
-    QDataStream stream(&encodeData,QIODevice::WriteOnly);
-    foreach (const QModelIndex&ind,index) {
-        if (ind.isValid()) {
-            stream<<ind.row();
-        }
-    }
-    mimeData->setData("InputMethod",encodeData);
-    return mimeData;
-}
-
-bool IMModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
-{
-    if(action == Qt::IgnoreAction)
-        return true;
-
-    if(!data->hasFormat("InputMethod")||column>0)
-        return  false;
-
-    QByteArray encodeData =data->data("InputMethod");
-    QDataStream stream(&encodeData,QIODevice::ReadOnly);
-    int rows=0;
-    if (!stream.atEnd()) {
-        int moveRow;
-        stream >>moveRow;
-        rows = moveRow;
-    }
-
-    if(row==0||parent.row()==0)
-        return false;
-
-    int insRow;
-    if (row!=-1)
-        insRow =row;
-    else if(parent.isValid())
-        insRow=parent.row();
-    else
-        insRow=rowCount()-1;
-
-    if (rows == insRow)
-        return false;
-    else if (rows>insRow) {
-        m_curIMList.insert(insRow,m_curIMList[rows]);
-        m_curIMList.removeAt(rows+1);
-    } else {
-        FcitxQtInputMethodItem it = m_curIMList[rows];
-        m_curIMList.removeAt(rows);
-        m_curIMList.insert(insRow,it);
-    }
-    loadItem();
-    return true;
-}
-
-Qt::ItemFlags IMModel::flags(const QModelIndex &index) const
-{
-    if(!index.isValid()||index.row()==0)
-        return Qt::ItemIsEnabled|Qt::ItemIsDropEnabled|Qt::ItemIsSelectable;
-
-    return QAbstractItemModel::flags(index)|Qt::ItemIsEditable|Qt::ItemIsDropEnabled|Qt::ItemIsDragEnabled;
+    m_ins->IMListSave();
+    deleteObject_Null(m_ins);
 }
 
 void IMModel::setEdit(bool flag)
 {
-    this->m_isDeleteEdit = flag;
-    loadItem();
+    m_isEdit = flag;
+    if (!m_isEdit) {
+        IMListSave();
+        emit availIMListChanged(m_availeIMList);
+    }
 }
 
-
-void IMModel::slot_filterIMEntryList(const FcitxQtInputMethodItemList &imEntryList)
+int IMModel::getIMIndex(const QString &IM) const
 {
-    QSet<QString> languageSet;
-    m_curIMList.clear();
-    Q_FOREACH(const FcitxQtInputMethodItem & im, imEntryList) {
-        if (im.enabled()) {
-            m_curIMList.append(im);
+    if (IM.isEmpty()) {
+        return -1;
+    }
+
+    for (int i = 0; i < m_curIMList.count(); ++i) {
+        if (m_curIMList[i].name() == IM || m_curIMList[i].uniqueName().indexOf(IM, Qt::CaseInsensitive) != -1
+            || m_curIMList[i].langCode().indexOf(IM, Qt::CaseInsensitive) != -1) {
+            return i;
         }
     }
-    loadItem();
+    return -1;
 }
 
-void IMModel::loadItem()
+int IMModel::getIMIndex(const FcitxQtInputMethodItem &IM) const
 {
-    int i =0;
-    foreach (FcitxQtInputMethodItem it,m_curIMList) {
-       QStandardItem* iter = item(i,0);
-       DStandardItem*item =dynamic_cast<DStandardItem*>(iter);
-       if(!item) {
-           item =new DStandardItem();
-           this->appendRow(item);
-       }
+    return getIMIndex(IM.name());
+}
 
-       if (item->text()!=it.name()){
-           item->setText(it.name());
-       }
+FcitxQtInputMethodItem IMModel::getIM(int index) const
+{
+    if (index > m_curIMList.count() || index < 0)
+        return FcitxQtInputMethodItem();
+    return m_curIMList[index];
+}
 
-       if(i++>0) {
-           DViewItemActionList list;
-           if (m_isDeleteEdit) {
-               DViewItemAction *iconAction = new DViewItemAction(Qt::AlignBottom, QSize(), QSize(), true);
-               iconAction->setIcon(DStyle::standardIcon(QApplication::style(), DStyle::SP_DeleteButton));
-               connect(iconAction,&DViewItemAction::triggered,[=](){deleteItem(item);});
-               list.push_back(iconAction);
-           } else {
-               DViewItemAction *iconAction = new DViewItemAction(Qt::AlignBottom, QSize(), QSize(), true);
-               iconAction->setIcon(QIcon(":/icons/arrow_up.svg"));
-               DViewItemAction *iconAction2 = new DViewItemAction(Qt::AlignBottom, QSize(), QSize(), true);
-               iconAction2->setIcon(QIcon(":/icons/arrow_down.svg"));
-               DViewItemAction *iconAction3 = new DViewItemAction(Qt::AlignBottom, QSize(), QSize(), true);
-               iconAction3->setIcon(QIcon(":/icons/setting.svg"));
-               connect(iconAction,&DViewItemAction::triggered,[=](){itemUp(item);});
-               connect(iconAction2,&DViewItemAction::triggered,[=](){itemDown(item);});
-               connect(iconAction3,&DViewItemAction::triggered,[=](){configShow(item);});
-               list.push_back(iconAction);
-               list.push_back(iconAction2);
-               list.push_back(iconAction3);
-           }
-           item->setActionList(Qt::RightEdge,list);
-       }
-    }
+void IMModel::onUpdateIMList()
+{
+    if (Global::instance()->inputMethodProxy()) {
+        FcitxQtInputMethodItemList &&list = Global::instance()->inputMethodProxy()->iMList();
+        FcitxQtInputMethodItemList curList, availList;
+        Q_FOREACH (const FcitxQtInputMethodItem &im, list) {
+            im.enabled() ? curList.append(im) : availList.append(im);
+        }
 
-    while (rowCount()>m_curIMList.count()) {
-        removeRow(rowCount()-1);
+        if (curList != m_curIMList) {
+            m_curIMList.swap(curList);
+            emit curIMListChanaged(m_curIMList);
+        }
+
+        if (availList != m_availeIMList) {
+            m_availeIMList.swap(availList);
+            emit availIMListChanged(m_availeIMList);
+        }
+
+    } else {
+        m_availeIMList.clear();
+        m_curIMList.clear();
+        emit curIMListChanaged(m_curIMList);
+        emit availIMListChanged(m_availeIMList);
     }
 }
 
-void IMModel::deleteItem(DStandardItem *item)
+void IMModel::onAddIMItem(FcitxQtInputMethodItem item)
 {
-    m_curIMList.removeAt(item->row());
-    loadItem();
-    emit sig_curIMchanged(m_curIMList);
+    if (item.name().isEmpty() || item.uniqueName().isEmpty())
+        return;
+
+    m_availeIMList.removeAll(item);
+    item.setEnabled(true);
+    m_curIMList.insert(1, item);
+    IMListSave();
+    emit curIMListChanaged(m_curIMList);
+    emit availIMListChanged(m_availeIMList);
 }
 
-void IMModel::itemUp(DStandardItem *item)
+void IMModel::onDeleteItem(FcitxQtInputMethodItem item)
 {
-    if(item->row()<2)
-        return ;
-   itemSawp(item->row(),item->row()-1);
+    m_curIMList.removeAll(item);
+    item.setEnabled(false);
+    m_availeIMList.append(item);
 }
 
-void IMModel::itemDown(DStandardItem *item)
+void IMModel::onItemUp(FcitxQtInputMethodItem item)
 {
-    if(item->row()==m_curIMList.count()-1)
-        return ;
-    itemSawp(item->row(),item->row()+1);
+    int row = getIMIndex(item);
+
+    if (row < 2) {
+        return;
+    }
+    m_curIMList.swap(row, row - 1);
+    IMListSave();
+    emit IMItemSawp(row, row - 1);
 }
 
-void IMModel::itemSawp(int index, int index2)
+void IMModel::onItemDown(FcitxQtInputMethodItem item)
 {
-    if (index <0 || index > m_curIMList.count()-1 || index2 < 0 || index2 > m_curIMList.count()-1 )
-        return ;
-    m_curIMList.swap(index,index2);
-    loadItem();
-    emit sig_curIMchanged(m_curIMList);
+    int row = getIMIndex(item);
+
+    if (row == m_curIMList.count() - 1) {
+        return;
+    }
+
+    m_curIMList.swap(row, row + 1);
+    IMListSave();
+    emit IMItemSawp(row, row + 1);
 }
 
-void IMModel::configShow(DStandardItem *item)
+void IMModel::onConfigShow(FcitxQtInputMethodItem item)
 {
+    QString imName = item.name();
+    QString imLangCode = item.langCode();
+    QString imUniqueName = item.uniqueName();
 
+    QStringList closeSrcImList {
+        "chineseime", "iflyime", "huayupy", "sogoupinyin", "baidupinyin"};
+
+    if (closeSrcImList.contains(imUniqueName)) {
+        QProcess::startDetached(IMConfig::IMPluginKey(imUniqueName));
+    } else {
+        QDBusPendingReply<QString>
+            result = Global::instance()->inputMethodProxy()->GetIMAddon(imUniqueName);
+        result.waitForFinished();
+        if (result.isValid()) {
+            QProcess::startDetached("fcitx-config-gtk3 " + result.value());
+        }
+    }
+}
+
+void IMModel::IMListSave()
+{
+    if (Global::instance()->inputMethodProxy()) {
+        FcitxQtInputMethodItemList &&list = (m_curIMList + m_availeIMList);
+        if (list == Global::instance()->inputMethodProxy()->iMList())
+            return;
+        if (Global::instance()->inputMethodProxy()) {
+            Global::instance()->inputMethodProxy()->setIMList(m_curIMList + m_availeIMList);
+            Global::instance()->inputMethodProxy()->ReloadConfig();
+        }
+    }
 }

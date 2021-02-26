@@ -32,7 +32,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class SettingsHeaderItem : public SettingsItem
@@ -53,7 +53,7 @@ private:
     TitleLabel *m_headerText;
 };
 
-}
-}
+} // namespace widgets
+} // namespace dcc
 
 #endif // SETTINGSHEADERITEM_H

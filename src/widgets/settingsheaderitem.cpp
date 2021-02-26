@@ -27,13 +27,13 @@
 
 #include "labels/normallabel.h"
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 SettingsHeaderItem::SettingsHeaderItem(QWidget *parent)
-    : SettingsItem(parent),
-      m_mainLayout(new QHBoxLayout),
-      m_headerText(new TitleLabel)
+    : SettingsItem(parent)
+    , m_mainLayout(new QHBoxLayout)
+    , m_headerText(new TitleLabel)
 {
     m_headerText->setObjectName("SettingsHeaderItemTitle");
 
@@ -60,5 +60,5 @@ void SettingsHeaderItem::setRightWidget(QWidget *widget)
     m_mainLayout->addWidget(widget, 0, Qt::AlignRight);
 }
 
-}
-}
+} // namespace widgets
+} // namespace dcc

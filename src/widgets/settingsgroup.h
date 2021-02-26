@@ -37,11 +37,12 @@ class QVBoxLayout;
 
 DWIDGET_USE_NAMESPACE
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class SettingsItem;
 class SettingsHeaderItem;
+class SettingsHead;
 
 class SettingsGroup : public TranslucentFrame
 {
@@ -75,13 +76,13 @@ public:
     QVBoxLayout *getLayout() const { return m_layout; }
 
 private:
-    BackgroundStyle m_bgStyle{ItemBackground};
+    BackgroundStyle m_bgStyle {ItemBackground};
     QVBoxLayout *m_layout;
     SettingsHeaderItem *m_headerItem;
-    DTK_WIDGET_NAMESPACE::DBackgroundGroup *m_bggroup{nullptr};
+    DTK_WIDGET_NAMESPACE::DBackgroundGroup *m_bggroup {nullptr};
 };
 
-}
-}
+} // namespace widgets
+} // namespace dcc_fcitx_configtool
 
 #endif // SETTINGSGROUP_H

@@ -28,7 +28,7 @@
 
 #include <QLabel>
 
-namespace dcc {
+namespace dcc_fcitx_configtool {
 namespace widgets {
 
 class NormalLabel : public QLabel
@@ -38,7 +38,7 @@ public:
     using QLabel::QLabel; // using default inheritance constructor
 };
 
-}
-}
+} // namespace widgets
+} // namespace dcc
 
 #endif // NORMALLABEL_H
